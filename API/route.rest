@@ -1,0 +1,105 @@
+GET http://localhost:8080/productos/categoria/607e24f50461c02dd8717a89
+
+###
+
+GET http://localhost:8080/reportes/reportes-tipo/limpieza
+
+###
+
+GET http://localhost:8080/usuarios/credenciales/sta1ync@gmail.com
+
+###
+
+GET http://localhost:8080/categorias/607e24250461c02dd8717a87
+
+###
+
+POST http://localhost:8080/usuarios/
+Content-Type: application/json
+
+{
+    "nombre": "Stasey",
+    "primerApellido": "Nerdrick",
+    "segundoApellido": "Carvajal",
+    "sexo": "F",
+    "fechaNacimiento": "30-01-1999",
+    "paisNacimiento": "CR",
+    "tipoIdentificacion": "Cédula",
+    "numeroIdentificacion": "703340333",
+    "direccion": "San Isidro",
+    "telefono": "8888-9898",
+    "telefonoSecundario": "7665-8877",
+    "correo": "staync@gmail.com",
+    "contrasenia": "stay1234",
+    "tipoCasos": ""
+}
+
+###
+
+PATCH http://localhost:8080/usuarios/60ae01fc3c8b3422247d7ad2
+Content-Type: application/json
+
+{
+    "nombre": "Stasey",
+    "primerApellido": "Nerdrick",
+    "segundoApellido": "Carvajal",
+    "sexo": "F",
+    "fechaNacimiento": "30-01-1999",
+    "paisNacimiento": "CR",
+    "tipoIdentificacion": "Cédula",
+    "numeroIdentificacion": "703340333",
+    "direccion": ["Limón", "Siquirres", "La Alegría"],
+    "telefono": "8888-9898",
+    "telefonoSecundario": "7665-8877",
+    "correo": "staync@gmail.com",
+    "contrasenia": "stay1234",
+    "tipoCasos": ""
+}
+
+###
+
+POST http://localhost:8080/reportes/filtrar
+Content-Type: application/json
+
+{
+    "tipo": "seguridad",
+    "identificador": "Reporte #0"
+}
+
+###
+
+POST http://localhost:8080/reporte/
+Content-Type: application/json
+
+{
+    "tipo": "limpieza",
+    "fecha": "03/20/2021",
+    "hora": "14:00:00",
+    "multimedia":[],
+    "descripcion": "Descripcion 15",
+    "ubicacion": [],
+    "creadoPor": "60ab5912f567f237e040736e"
+}
+
+###
+
+PATCH http://localhost:8080/reportes/60ab5e6bf486770efc5cb786
+Content-Type: application/json
+
+{
+    "estado": "En revisión"
+}
+
+###
+
+DELETE http://localhost:8080/usuarios/60ae00c8a758460b7cf07d32
+
+###
+
+PATCH http://localhost:8080/categorias/607e24250461c02dd8717a87
+Content-Type: application/json
+
+{
+    "nombre":"pantalones"
+}
+
