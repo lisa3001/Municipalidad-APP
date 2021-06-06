@@ -1,9 +1,11 @@
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, StatusBar, ScrollView, TextInput, Pressable
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LogIn({ navigation }) {
 
@@ -15,6 +17,20 @@ export default function LogIn({ navigation }) {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [hidePass, setHidePass] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('@session')
+        var res = jsonValue != null ? JSON.parse(jsonValue) : null;
+        if(res !== null) {
+          navigation.navigate('Inicio');
+        }
+      } catch(e) {
+        console.log(e);
+      }
+    })();  
+  },[]);
 
   const validateEntry = (e, id) =>{
     var flag = 0;
@@ -37,6 +53,62 @@ export default function LogIn({ navigation }) {
       if (flag === 0) setPassErr(false);
       if (flag === 1) setPassErr(true);
     }
+  }
+
+  const storeData = async (value) => {
+    try {
+      const jsonValue = JSON.stringify(value)
+      await AsyncStorage.setItem('@session', jsonValue)
+      navigation.navigate('Inicio');
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  const validateCredentials = (user) => {
+    if(user.length > 0){
+      if(user[0].contrasenia === password){
+        console.log("Todo bien");
+        storeData(user[0]);
+      }else{
+        setPassErr(true);
+        setErrorMessPass("Contraseña incorrecta");
+      }
+    }else{
+      setUserNameErr(true);
+      setErrorMess("Correo no registrado");
+    }
+  }
+
+  const getCredentials = (email) =>{
+    (async () => {
+      var user = await axios
+          .get("http://192.168.0.18:8080/usuarios/credenciales/" + email)
+          .then((response) => {
+              validateCredentials(response.data);
+          })
+          .catch((error) => {
+          console.error("There was an error!", error);
+          validateCredentials([]);
+          });
+  })(); 
+  }
+
+  const validarInicio = () =>{
+    var flag = 0;
+    if( userName === "" || !userName.includes("@")){
+        setUserNameErr(true);
+        setErrorMess("Debes ingresar un correo");
+        flag = 1
+    }
+    if(password === ""){
+        setPassErr(true);
+        setErrorMessPass("Debes ingresar una contraseña");
+        flag=1;
+    }
+    if(flag === 0) getCredentials(userName);
+
+    
   }
 
   return (
@@ -83,10 +155,10 @@ export default function LogIn({ navigation }) {
         }
       </View>
       <View style={styles.buttonsView}>
-      <Pressable style={styles.buttonsStyle}>
+      <Pressable style={styles.buttonsStyle} onPress={validarInicio}>
         <Text style={styles.textButton}>Iniciar Sesión</Text>
       </Pressable>
-      <Pressable style={styles.buttonsStyle}>
+      <Pressable style={styles.buttonsStyle} onPress={() => navigation.navigate('Registro1')}>
         <Text style={styles.textButton}>Registrarme</Text>
       </Pressable>
       </View>
@@ -102,7 +174,7 @@ const styles = StyleSheet.create({
     backgroundColor:"white"
   },
   logoRow:{
-    height: hp('50%'),
+    height: hp('45%'),
     width: wp('100%'),
     alignItems: 'center',
     justifyContent: 'center',
@@ -118,7 +190,7 @@ const styles = StyleSheet.create({
     height: hp('60%'),
     width: wp('60%'),
     resizeMode: 'contain',
-    marginBottom: -50,
+    marginBottom: -30,
   },
   inputView:{
     flexDirection: "row",
