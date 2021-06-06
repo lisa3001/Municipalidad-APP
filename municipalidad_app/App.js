@@ -10,6 +10,7 @@ import Registro1  from './Components/registro1.js';
 import Registro2  from './Components/registro2.js';
 import Registro3  from './Components/registro3.js';
 import Inicio  from './Components/inicio.js';
+import MiPerfil  from './Components/miperfil';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ export default function App() {
           <Stack.Screen name="Registro3" component={Registro3} />
           <Stack.Screen name="LogIn" component={LongIn} />
           <Stack.Screen name="Inicio" component={Inicio} />
+          <Stack.Screen name="MiPerfil" component={MiPerfil} />
         </Stack.Navigator>
       </NavigationContainer>
     </View> 

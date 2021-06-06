@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Image, StatusBar, ScrollView, TextInput, Pressa
 } from 'react-native';
 import Modal from 'react-native-modal';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Registro3({ navigation }) {
 
@@ -15,7 +16,68 @@ export default function Registro3({ navigation }) {
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [hidePass, setHidePass] = useState(true);
-  
+
+
+    const storeData = async (value) => {
+      try {
+        const jsonValue = JSON.stringify(value)
+        await AsyncStorage.setItem('@session', jsonValue)
+        navigation.navigate('Inicio');
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    const uploadData = (user) =>{
+      (async () => {
+          await axios
+              .post("http://192.168.0.18:8080/usuarios/", user[0])
+              .then((response) => {
+                  storeData([response.data]);
+              })
+              .catch((error) => {
+              console.error("There was an error!", error);
+              });
+      })(); 
+  }
+
+
+    const loadData = async () =>{
+      try {
+        const jsonValue = await AsyncStorage.getItem('@register')
+        var res = jsonValue != null ? JSON.parse(jsonValue) : null;
+        if(res !== null) {
+          res[0].correo = userName;
+          res[0].contrasenia = password;
+          uploadData(res);
+        }
+      } catch(e) {
+        console.log(e);
+      }
+    }
+
+    const validateCredentials = (user) => {
+      if(user.length === 0){
+        loadData();
+      }else{
+        setUserNameErr(true);
+        setErrorMess("El correo ingresado ya se encuentra registrado");
+      }
+    }
+
+    const getCredentials = (email) =>{
+      (async () => {
+        var user = await axios
+            .get("http://192.168.0.18:8080/usuarios/credenciales/" + email)
+            .then((response) => {
+                validateCredentials(response.data);
+            })
+            .catch((error) => {
+            console.error("There was an error!", error);
+            validateCredentials([]);
+            });
+    })(); 
+    }
     const validateEntry = (e, id) =>{
       var flag = 0;
       if(id === "user"){
@@ -36,6 +98,41 @@ export default function Registro3({ navigation }) {
         }
         if (flag === 0) setPassErr(false);
         if (flag === 1) setPassErr(true);
+      }
+    }
+
+    const validatePass = () =>{
+      const regex = /\d/;
+      const hasNumber = regex.test(password);
+      const hasLower = password.toUpperCase() !== password;
+      const hasUpper = password.toLowerCase() !== password;
+      if(hasNumber && hasLower && hasUpper && password.length >= 8){
+          return true;
+      }
+      else{
+        return false;
+      }
+    }
+
+    const validarDatos = () => {
+      var flag = 0;
+      if( userName === "" || !userName.includes("@")){
+          setUserNameErr(true);
+          setErrorMess("Debes ingresar un correo");
+          flag = 1
+      }
+      if(password === ""){
+          setPassErr(true);
+          setErrorMessPass("Debes ingresar una contraseña");
+          flag=1;
+      }
+      if(flag === 0){
+        if(validatePass()){
+          getCredentials(userName);
+        }else{
+          setPassErr(true);
+          setErrorMessPass("La contraseña debe tener mínimo 8 caracteres con números, mayúsculas y minúsculas");
+        }
       }
     }
 
@@ -84,7 +181,7 @@ export default function Registro3({ navigation }) {
             }
         </View>
         <View style={styles.buttonsView}>
-        <Pressable style={styles.buttonsStyle}>
+        <Pressable style={styles.buttonsStyle} onPress={validarDatos}>
             <Text style={styles.textButton}>Guardar</Text>
         </Pressable>
         </View>

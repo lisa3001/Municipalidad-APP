@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Image, StatusBar, ScrollView, TextInput, Pressa
 } from 'react-native';
 import Modal from 'react-native-modal';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Registro2({ navigation }) {
 
@@ -122,6 +123,62 @@ export default function Registro2({ navigation }) {
         }
         setShowMD(false);
     } 
+
+    const validarDatos = () =>{
+        var flag = 0;
+        if(paisNacimiento === ""){
+            setPNacimientoErr(true);
+            flag = 1;
+        }
+        if(provincia.length === 0){
+            setProvinciaErr(true);
+            flag = 1;
+        }
+        if(canton.length === 0){
+            setCantonErr(true);
+            flag = 1;
+        }
+        if(distrito.length === 0){
+            setDistritoErr(true);
+            flag = 1;
+        }
+        if(telefono === ""){
+            setTelefonoErr(true);
+            flag = 1;
+        }
+        if(telefonoS === ""){
+            setTelefonoSErr(true);
+            flag = 1;
+        }
+        else{
+            if(flag === 0)updateData();
+        }
+    }
+    const storeData = async (value) => {
+        try {
+          const jsonValue = JSON.stringify(value)
+          await AsyncStorage.setItem('@register', jsonValue)
+          navigation.navigate('Registro3');
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
+    const updateData = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('@register')
+            var res = jsonValue != null ? JSON.parse(jsonValue) : null;
+            if(res !== null) {
+              res[0].paisNacimiento = paisNacimiento;
+              res[0].direccion = [provincia[0], canton[0], distrito[0]];
+              res[0].telefono = telefono;
+              res[0].telefonoSecundario = telefonoS;
+              storeData(res);
+            }
+          } catch(e) {
+            console.log(e);
+          }
+      }
 
     const showList = (tipo) =>{
         setTipo(tipo);
@@ -297,7 +354,7 @@ export default function Registro2({ navigation }) {
                 }
             </View>
                 <View style={styles.buttonsView}>
-                        <Pressable style={styles.buttonsStyle} onPress={() => navigation.navigate('Registro3')}>
+                        <Pressable style={styles.buttonsStyle} onPress={validarDatos}>
                             <Text style={styles.textButton}>Siguiente</Text>
                         </Pressable>
                 </View>

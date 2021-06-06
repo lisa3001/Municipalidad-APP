@@ -4,23 +4,13 @@ import { StyleSheet, Text, View
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Inicio({ navigation }) {
-
-
-    const logOut = async () => {
-        try {
-          await AsyncStorage.removeItem('@session');
-          navigation.goBack();
-        } catch (e) {
-          console.log(e);
-        }
-      }
+export default function MiPerfil({ navigation }) {
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.backButton} title="Go back" onPress={logOut}>Cerrar Sesión</Text>
-                <Text style={styles.title}>Inicio</Text>
+                <Text style={styles.backButton} title="Go back" onPress={() => navigation.goBack()}>Regresar</Text>
+                <Text style={styles.title}>Mi Perfil</Text>
             </View>
         </View> 
       );

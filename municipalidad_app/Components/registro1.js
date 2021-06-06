@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Image, StatusBar, ScrollView, TextInput, Pressa
 } from 'react-native';
 import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Registro1({ navigation }) {
 
@@ -33,11 +34,13 @@ export default function Registro1({ navigation }) {
     
 
     const elegirSexo = (tipo) =>{
+        setSexoErr(false);
         setSexo(tipo);
         setShowMS(false);
     }
 
     const elegirIdentificacion = (tipo) =>{
+        setTipoIErr(false);
         setTipoIdent(tipo);
         setShowMS(false);
         var flag = 0;
@@ -52,6 +55,16 @@ export default function Registro1({ navigation }) {
         if (flag === 0) setNumIErr(false);
         if (flag === 1) setNumIErr(true);
     }
+
+    const storeData = async (value) => {
+        try {
+          const jsonValue = JSON.stringify(value)
+          await AsyncStorage.setItem('@register', jsonValue)
+          navigation.navigate('Registro2');
+        } catch (e) {
+          console.log(e);
+        }
+      }
 
     const validateEntry = (e, id) =>{
         var flag = 0;
@@ -80,7 +93,6 @@ export default function Registro1({ navigation }) {
                 setErrorNum("Formato incorrecto, recuerda usar 0 en vez de guiones");
             }
             else if(tipoIdent === "Dimex" && (numeroIdent.length !== 12)){
-                console.log("enrrr");
                 flag = 1;
                 setErrorNum("Formato incorrecto, recuerda que Dimex tiene 12 dígitos");
             }
@@ -134,11 +146,69 @@ export default function Registro1({ navigation }) {
     }
 
     const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
+        if(selectedDate != null){
+            setDateErr(false);
+            const currentDate = selectedDate;
+            setDate(currentDate);
+            setDateS(currentDate.getDate() + "/" + (currentDate.getMonth() + 1) + "/" + currentDate.getFullYear());
+        }
         setShow(false);
-        setDate(currentDate);
-        setDateS(currentDate.getDate() + "/" + (currentDate.getMonth() + 1) + "/" + currentDate.getFullYear());
     };
+
+    const validarCampos = () => {
+        var flag = 0;
+        if(name === ""){
+            setNameErr(true);
+            flag = 1;
+        }
+        if(apellido === ""){
+            setAp1Err(true);
+            flag = 1;
+        }
+        if(apellido2 === ""){
+            setAp2Err(true);
+            flag = 1;
+        }
+        if(sexo === ""){
+            setSexoErr(true);
+            flag = 1;
+        }
+        if(dateS === ""){
+            setDateErr(true);
+            flag = 1;
+        }
+        if(tipoIdent === ""){
+            setTipoIErr(true);
+            flag = 1;
+        }
+        if(numeroIdent === ""){
+            setNumIErr(true);
+            flag = 1;
+        }
+        else{
+            if(flag === 0){
+                var user = [
+                    {
+                        "nombre": name,
+                        "primerApellido": apellido,
+                        "segundoApellido": apellido2,
+                        "sexo": sexo,
+                        "fechaNacimiento": dateS,
+                        "paisNacimiento": "",
+                        "tipoIdentificacion": tipoIdent,
+                        "numeroIdentificacion": numeroIdent,
+                        "direccion": [],
+                        "telefono": "",
+                        "telefonoSecundario": "",
+                        "correo": "",
+                        "contrasenia": "",
+                        "tipoCasos": "",
+                    }
+                ]
+                storeData(user);
+            }
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -274,7 +344,7 @@ export default function Registro1({ navigation }) {
                     </Text>)
                 }
                 <View style={styles.buttonsView}>
-                    <Pressable style={styles.buttonsStyle} onPress={() => navigation.navigate('Registro2')}>
+                    <Pressable style={styles.buttonsStyle} onPress={validarCampos}>
                         <Text style={styles.textButton}>Siguiente</Text>
                     </Pressable>
                 </View>

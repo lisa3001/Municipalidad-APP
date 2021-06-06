@@ -68,7 +68,6 @@ export default function LogIn({ navigation }) {
   const validateCredentials = (user) => {
     if(user.length > 0){
       if(user[0].contrasenia === password){
-        console.log("Todo bien");
         storeData(user[0]);
       }else{
         setPassErr(true);
@@ -107,8 +106,6 @@ export default function LogIn({ navigation }) {
         flag=1;
     }
     if(flag === 0) getCredentials(userName);
-
-    
   }
 
   return (

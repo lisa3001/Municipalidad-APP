@@ -34,7 +34,7 @@ const usuarioSchema = new mongoose.Schema({
         required: true
     },
     direccion: {
-        type: [String],
+        type: [{id: String, name: String}],
         required: true
     },
     telefono: {
