@@ -27,10 +27,7 @@ export default function Inicio({ navigation }) {
                 <Text style={styles.textButton}>Mi perfil</Text>
               </Pressable>
               <Pressable style={styles.buttonsStyle}>
-                <Text style={styles.textButton}>Mis Reportes</Text>
-              </Pressable>
-              <Pressable style={styles.buttonsStyle}>
-                <Text style={styles.textButton}>Generar Reporte</Text>
+                <Text style={styles.textButton}>Ver Reportes</Text>
               </Pressable>
           </View>
         </View> 

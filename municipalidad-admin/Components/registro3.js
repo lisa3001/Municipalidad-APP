@@ -11,11 +11,16 @@ export default function Registro3({ navigation }) {
     const [userNameErr, setUserNameErr] = useState(false);
     const [passErr, setPassErr] = useState(false);
     const [errorMess, setErrorMess] = useState("Hay un error");
+    const [errorMess2, setErrorMess2] = useState("Debes elegir un tipo de caso");
     const [errorMessPass, setErrorMessPass] = useState("Hay un error");
   
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
+    const [tipoCaso, setTipoCaso] = useState("");
     const [hidePass, setHidePass] = useState(true);
+    const [casoErr, setCasoErr] = useState(false);
+
+    const[showMS, setShowMS] = useState(false);
 
 
     const storeData = async (value) => {
@@ -49,6 +54,7 @@ export default function Registro3({ navigation }) {
         if(res !== null) {
           res[0].correo = userName;
           res[0].contrasenia = password;
+          res[0].tipoCasos = tipoCaso;
           uploadData(res);
         }
       } catch(e) {
@@ -114,6 +120,12 @@ export default function Registro3({ navigation }) {
       }
     }
 
+    const elegirIdentificacion = (tipo) =>{
+      //setTipoIErr(false);
+      setTipoCaso(tipo);
+      setShowMS(false);
+  }
+
     const validarDatos = () => {
       var flag = 0;
       if( userName === "" || !userName.includes("@")){
@@ -126,6 +138,10 @@ export default function Registro3({ navigation }) {
           setErrorMessPass("Debes ingresar una contraseña");
           flag=1;
       }
+      if(tipoCaso === ""){
+        setCasoErr(true);
+        flag=1;
+    }
       if(flag === 0){
         if(validatePass()){
           getCredentials(userName);
@@ -138,6 +154,25 @@ export default function Registro3({ navigation }) {
 
     return (
         <View style={styles.container}>
+          <Modal isVisible={showMS} onBackdropPress={() => setShowMS(false)} animationIn="zoomInUp" animationOut="zoomOut" animationOutTiming={900} animationInTiming={1400}>
+          <View style={styles.modal}>
+                <TouchableHighlight onPress={() => elegirIdentificacion("Limpieza")} style={{marginTop:4}}>
+                    <View style={styles.option}>
+                        <Text style={styles.optionText}>Limpieza</Text>
+                    </View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => elegirIdentificacion("Infraestructura")} style={{marginTop: hp('1%'),}}>
+                    <View style={styles.option}>
+                        <Text style={styles.optionText}>Infraestructura</Text>
+                    </View>
+                </TouchableHighlight> 
+                <TouchableHighlight onPress={() => elegirIdentificacion("Seguridad")} style={{marginTop: hp('1%'),}}>
+                    <View style={styles.option}>
+                        <Text style={styles.optionText}>Seguridad</Text>
+                    </View>
+                </TouchableHighlight>  
+                </View>
+            </Modal>
             <View style={styles.header}>
                 <Text style={styles.backButton} title="Go back" onPress={() => navigation.goBack()}>Regresar</Text>
                 <Text style={styles.title}>Registro</Text>
@@ -178,6 +213,22 @@ export default function Registro3({ navigation }) {
             {errorMessPass}
             </Text>
             :null
+            }
+          <TouchableOpacity>
+                <Pressable  style={casoErr ? styles.inputViewErr : styles.inputView} onPress={() => {setShowMS(true);}}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Tipo de casos a revisar"
+                    autoCapitalize="words"
+                    value={tipoCaso}
+                    editable={false}
+                /> 
+                </Pressable >
+            </TouchableOpacity>
+            {casoErr &&
+                (<Text style={styles.errText} >
+                {errorMess2}
+                </Text>)
             }
         </View>
         <View style={styles.buttonsView}>

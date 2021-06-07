@@ -10,7 +10,10 @@ import Registro1  from './Components/registro1.js';
 import Registro2  from './Components/registro2.js';
 import Registro3  from './Components/registro3.js';
 import Inicio  from './Components/inicio.js';
-import MiPerfil  from './Components/miperfil';
+import MiPerfil  from './Components/miperfil.js';
+import NuevaContrasenia  from './Components/NuevaContrasenia.js';
+import VerInfo1  from './Components/verInfo1.js';
+import VerInfo2  from './Components/verInfo2.js';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +29,9 @@ export default function App() {
           <Stack.Screen name="LogIn" component={LongIn} />
           <Stack.Screen name="Inicio" component={Inicio} />
           <Stack.Screen name="MiPerfil" component={MiPerfil} />
+          <Stack.Screen name="NuevaContrasenia" component={NuevaContrasenia} />
+          <Stack.Screen name="VerInfo1" component={VerInfo1} />
+          <Stack.Screen name="VerInfo2" component={VerInfo2} />
         </Stack.Navigator>
       </NavigationContainer>
     </View> 
